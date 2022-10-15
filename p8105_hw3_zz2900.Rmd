@@ -199,7 +199,7 @@ noaa_clean %>%
   arrange(desc(n))
 ```
 
-The most commonly observed value is 0, since most of the year does not snow.
+The most commonly observed value is 0, since most of time does not snow.
 
 **Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?**
 
