@@ -230,10 +230,10 @@ p_tmax_tmin =
   ggplot(aes(x = tmin, y = tmax)) +
   geom_hex() +
   labs(
-    x = "Min Temperature (°C)",
-    y = "Max Temperature (°C)"
+    x = "Min temperature (°C)",
+    y = "Max temperature (°C)"
   ) +
-  theme(legend.position = "left")
+  theme(legend.position = "bottom")
 
 p_snowfall =
   noaa_clean %>% 
@@ -242,11 +242,9 @@ p_snowfall =
   ggplot(aes(x = snow, y = year)) +
   geom_density_ridges() +
   labs(
-    title = "Snowfall by year",
-    x = "Snowfall (mm)",
-    y = "Year",
-    caption = "Data from snowfall value (0~100 mm)"
-  ) +
+    title = "Snowfall by year", 
+    x = "Snowfall (mm)", 
+    y = "Year") +
   scale_x_continuous(
     breaks = c(0,25,50,75,100)) +
   scale_y_discrete(
