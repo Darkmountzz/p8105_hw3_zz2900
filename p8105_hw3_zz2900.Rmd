@@ -94,3 +94,71 @@ instacart %>%
   knitr::kable(digits = 2)
 ```
 
+## Problem 2
+
+**Load and tidy Data**
+
+```{r}
+accel_df = 
+  read.csv("./data/accel_data.csv") %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(
+    activity_1:activity_1440,
+    names_to = "minute",
+    values_to = "activity_counts",
+    names_prefix = "activity_"
+  ) %>% 
+  mutate(
+    minute = as.numeric(minute),
+    day = factor(day, 
+                 levels = c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")),
+    weekday_weekend = if_else((day == "Saturday" | day == "Sunday"),"Weekend","Weekday"),
+    weekday_weekend = factor(weekday_weekend, 
+                             levels = c("Weekday", "Weekend"))
+  ) %>% 
+  relocate(week,day_id, day,weekday_weekend)
+
+```
+**Describe the resulting dataset:**
+
+The accel_df dataset contains `r nrow(accel_df)` observations of activity (accelerometer data), and there are `r ncol(accel_df)` variables, which are `r names(accel_df)` that describing the information of data. 
+
+`r names(accel_df)[5]`: the number of minute of a 24-hour day starting at midnight.
+
+`r names(accel_df)[6]`: the activity count of the male collected by accelerometer.
+
+**Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate across minutes to create a total activity variable for each day, and create a table showing these totals. Are any trends apparent?**
+
+```{r}
+total_activity_data = accel_df %>% 
+  group_by(week, day) %>%
+  summarize(activity_total = sum(activity_counts),
+            .groups = "drop") %>%
+  pivot_wider(names_from = day,
+              values_from = activity_total)
+knitr::kable(total_activity_data)
+```
+
+The trend in total daily activity counts changed significantly over time over five weeks. The weekend accelerometer monitoring data has a tendency to be much lower than the weekday data. And, the trend in total daily activity counts changed significantly over time over five weeks.
+
+**Make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week.**
+
+```{r fig.width = 10, fig.height = 9}
+accel_df %>% 
+  ggplot(aes(x = minute, 
+             y = activity_counts, 
+             color = day)) +
+  geom_line(alpha = .4) +
+  scale_x_continuous(
+    breaks = c(0, 180, 360, 540, 720, 900, 1080, 1260, 1440),
+    labels = c("0:00", "3:00", "6:00", "9:00","12:00","15:00","18:00","21:00","24:00"),
+    limits = c(0,1440)) +
+  labs(title = "24-hour activity time courses per day",
+       x = "Time",
+       y = "Activity accelerometer data") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+From the graph, we can calculate that this male's activity count increased around 11am to 12pm and 7pm to 10pm.
+
+
