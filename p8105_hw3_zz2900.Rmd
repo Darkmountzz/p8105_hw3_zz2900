@@ -94,7 +94,7 @@ instacart %>%
   knitr::kable(digits = 2)
 ```
 
-## Problem 2
+### Problem 2
 
 **Load and tidy Data**
 
@@ -246,7 +246,7 @@ p_snowfall =
     title = "Snowfall by year", 
     x = "Snowfall (mm)", 
     y = "Year") +
-  scale_x_continuous(
+  scale_x_discrete(
     breaks = c(0,25,50,75,100)) +
   scale_y_discrete(
     position = "left") +
