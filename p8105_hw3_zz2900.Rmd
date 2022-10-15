@@ -241,7 +241,7 @@ p_snowfall =
   filter(snow > 0 & snow < 100) %>% 
   group_by(year) %>%
   ggplot(aes(x = snow, y = year)) +
-  geom_density_ridges() +
+  geom_density_ridges(alpha = 0.5) +
   labs(
     title = "Snowfall by year", 
     x = "Snowfall (mm)", 
@@ -250,7 +250,6 @@ p_snowfall =
     breaks = c(0,25,50,75,100)) +
   scale_y_discrete(
     position = "left") +
-  theme(legend.position = "left") +
   viridis::scale_fill_viridis() 
 
 p_tmax_tmin + p_snowfall
