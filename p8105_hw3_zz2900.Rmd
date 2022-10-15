@@ -233,7 +233,7 @@ p_tmax_tmin =
     x = "Min temperature (°C)",
     y = "Max temperature (°C)"
   ) +
-  theme(legend.position = "bottom")
+  theme(legend.position = "left")
 
 p_snowfall =
   noaa_clean %>% 
@@ -249,6 +249,7 @@ p_snowfall =
     breaks = c(0,25,50,75,100)) +
   scale_y_discrete(
     position = "left") +
+  theme(legend.position = "left")
   viridis::scale_fill_viridis() 
 
 p_tmax_tmin + p_snowfall
