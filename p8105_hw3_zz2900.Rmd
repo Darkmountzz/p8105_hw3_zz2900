@@ -161,4 +161,98 @@ accel_df %>%
 
 From the graph, we can calculate that this male's activity count increased around 11am to 12pm and 7pm to 10pm.
 
+### Problem 3
+
+**Clean and load data from ny_noaa.**
+
+```{r}
+library(p8105.datasets)
+data("ny_noaa")
+```
+
+This dataset provides weather data from weather stations in New York State from 1981 to 2010. This dataset has `r nrow(ny_noaa)` rows and `r ncol(ny_noaa)` columns. 
+
+The variables contains: `r names(ny_noaa)`. `id` indicates weather station ID, `date` indicates date of observation, `prcp` indicates precipitation, `snow` indicates snowfall, `snwd` indicates snow depth, `tmax` indicates maximun temperature, and `tmin` indicates minimun temperature. 
+
+However, `r nrow(drop_na(ny_noaa)) / nrow(ny_noaa) * 100`% of the observations contain missing value.
+
+**Clean data, create variables and wrangle data**
+
+```{r}
+cleaned_noaa_df =   
+  ny_noaa %>% 
+  janitor::clean_names() %>% 
+  separate(date, into = c("year", "month", "day", sep = "-")) %>% 
+  mutate(
+    month = month.name[as.integer(month)],
+    prcp = prcp / 10,
+    tmax = as.integer(tmax) / 10,
+    tmin = as.integer(tmin) / 10
+  )
+```
+
+```{r}
+cleaned_noaa_df %>% 
+  count(snow) %>% 
+  arrange(desc(n))
+```
+
+For snowfall, the most common value is 0 because there are few days snowing in a year.
+
+Then we make a two-panel plot showing the average max temperature in January and in July in each station across years.
+
+```{r}
+cleaned_noaa_df %>% 
+  filter(month %in% c("January", "July")) %>% 
+  group_by(month, id, year) %>% 
+  summarise(mean_tmax = mean(tmax, na.rm = TRUE)
+  ) %>% 
+  ggplot(aes(x = as.integer(year), y = mean_tmax, group = id,color = month)) +
+  geom_line(alpha = 0.3) +
+  facet_grid(. ~ month, scales = "free") +
+  labs(
+    x = "Year",
+    y = "Average Max Temperature (°C)",
+    title = "Average daily maximum temperature in New York State, 1981 to 2010"
+  ) +
+  theme(legend.position = "none")
+```
+
+From the plots, it seems like both average max temperatures in January and July fluctuate with the year. There are several outliers, for example, there was a very low point in January in 1982 and also a very low point in July in 1988.
+
+The two-panel plot below shows (i) `tmax` vs `tmin` for the full dataset; and (ii) the distribution of snowfall values greater than 0 mm and less than 100 mm separately by year.
+
+```{r}
+tmax_tmin_plot =   
+  cleaned_noaa_df %>% 
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_hex() +
+  labs(
+    x = "Min Temperature (°C)",
+    y = "Max Temperature (°C)"
+  ) +
+  theme(legend.position = "left")
+
+snow_plot =
+  cleaned_noaa_df %>% 
+  filter(
+    snow > 0 & snow < 100
+  ) %>% 
+  ggplot(aes(x = snow, y = year)) +
+  geom_density_ridges() +
+  labs(
+    title = "Snow distribution",
+    x = "Snowfall (mm)",
+    y = "Year",
+    caption = "Data from snowfall value (0~100 mm)"
+  ) +
+  scale_x_continuous(
+    breaks = c(0,25,50,75,100)) +
+  scale_y_discrete(
+    position = "left") +
+  viridis::scale_fill_viridis() 
+
+tmax_tmin_plot + snow_plot
+```
+
 
